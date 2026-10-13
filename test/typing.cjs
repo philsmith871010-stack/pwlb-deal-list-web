@@ -24,7 +24,7 @@ let PASS=0, FAIL=0; const ok=(c,m,d)=>{ if(c){ PASS++; console.log('  ok   '+m);
   await typeInto('Term investments','F19','30/09/2026');
   c=await cell('Term investments','F19'); ok(c.raw && c.raw.v===46295, '30/09/2026 is a date, not text', JSON.stringify(c.raw));
   await typeInto('Term investments','G19','4.1%');
-  c=await cell('Term investments','G19'); ok(c.raw && Math.abs(c.raw.v-0.041)<1e-12, 'a rate typed as 4.1% is 0.041', JSON.stringify(c.raw)); ok(c.shown==='4.10%', 'and shows as 4.10%', c.shown);
+  c=await cell('Term investments','G19'); ok(c.raw && c.raw.v===0.041, 'a rate typed as 4.1% is 0.041, exactly', JSON.stringify(c.raw)); ok(c.shown==='4.10%', 'and shows as 4.10%', c.shown);
   await typeInto('Term investments','D19','5,000,000');
   c=await cell('Term investments','D19'); ok(c.raw && c.raw.v===5000000, 'an amount typed as 5,000,000 is the number 5000000', JSON.stringify(c.raw)); ok(c.shown==='5,000,000', 'and shows as 5,000,000', c.shown);
   await typeInto('Term investments','B19','Lloyds Bank');

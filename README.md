@@ -22,8 +22,10 @@ counterparty monitoring) each reading it when they need it.
   buttons, and the protection on Settings (only the As at date, the pooling
   and the period start can be typed over; the sheets cannot be added to,
   renamed or removed).
-- Reads typing the British way: `01/04/2026` is 1 April, `4.1%` is 0.041,
-  `5,000,000` is a number.
+- Reads typing and pasting the British way: `01/04/2026` is 1 April, `4.1%`
+  is 0.041 (kept to Excel's 15 digits), `5,000,000` is a number. Rows copied
+  from Excel or another system paste straight in, and one Undo takes a paste
+  back.
 - Saves the workbook as it came, with only those sheets' cells replaced and
   each table stretched over any rows typed beneath it. The calculated sheets
   (Dashboard, Position, Benchmark and the hidden maths) are left as they are;
@@ -54,6 +56,7 @@ scripts/artifact.mjs the build, made publishable on claude.ai
   univer/build.js    the model as Univer's workbook data
   univer/protect.js  Excel's sheet protection: locked and unlocked cells
   univer/checks.js   the checking rules follow the rows typed
+  univer/numbers.js  numbers kept to Excel's 15 significant digits
 public/              the example and blank workbooks (made-up figures only)
 test/                browser tests (Playwright)
 ```
@@ -77,6 +80,7 @@ tool's page, from the pwlbtoday-tms repository, served on 8201):
 
 ```
 node test/typing.cjs      # UK dates, rates, amounts; protected cells
+node test/paste.cjs       # rows pasted from Excel or as plain text; Undo
 node test/roundtrip.cjs   # saved, the report tool reads it as before, edits and all
 node test/shots.cjs       # a screenshot of each sheet
 node test/longtasks.cjs   # how long the page is busy while opening

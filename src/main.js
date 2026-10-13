@@ -7,6 +7,7 @@ import { buildWorkbook } from "./univer/build.js";
 import { bootUniver } from "./univer/boot.js";
 import { installProtection } from "./univer/protect.js";
 import { installCheckGrowth } from "./univer/checks.js";
+import { installExcelNumbers } from "./univer/numbers.js";
 import { INPUT_SHEETS, SUPPORT_SHEETS, FIRST_SHEET } from "./config.js";
 
 const $ = id => document.getElementById(id);
@@ -14,6 +15,7 @@ const status = (t, kind = "") => { const s = $("status"); s.textContent = t; s.d
 
 const { univerAPI } = bootUniver("sheet");
 window.univerAPI = univerAPI;
+installExcelNumbers(univerAPI);
 
 let CURRENT = null;   /* {model, built, name, unprotect} */
 
