@@ -37,7 +37,7 @@ export async function openWorkbook(bytes, name){
   const unprotect = () => { p1(); p2(); };
   CURRENT = { model, built, name, unprotect };
   window.__deal = CURRENT;
-  document.title = `${name} · Deal list`;
+  document.title = `${name} · PWLB Deal List`;
   $("fname").textContent = name;
   status(missing.length ? `Opened, but without ${missing.join(", ")}` : "Ready", missing.length ? "bad" : "ok");
   if(built.extras.unsupported.length) console.warn("Not shown:", built.extras.unsupported);
@@ -54,12 +54,23 @@ export async function saveBytes(){
 }
 window.__saveBytes = async () => { const b = await saveBytes(); return b ? Array.from(b) : null; };
 
+/* SAVING TO THE COMPUTER. Published on claude.ai the page cannot start a
+   download itself: it offers the file through the viewer's "downloads"
+   capability, which asks the person to confirm. Anywhere else, an ordinary
+   download link. */
 async function download(){
   const bytes = await saveBytes();
   if(!bytes) return;
+  const filename = CURRENT.name.replace(/(\.xlsx)?$/i, ".xlsx");
+  const viewer = window.claude && window.claude.use ? await window.claude.use("downloads").catch(() => null) : null;
+  if(viewer){
+    try{ await viewer.save({ filename, data: new Blob([bytes]) }); status(`Saved ${filename}`, "ok"); }
+    catch(err){ status(err && err.code === "declined" ? "Not saved" : `Could not save: ${err && err.message || err}`, err && err.code === "declined" ? "" : "bad"); }
+    return;
+  }
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
-  a.download = CURRENT.name.replace(/(\.xlsx)?$/i, ".xlsx");
+  a.download = filename;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
   status(`Saved ${a.download}`, "ok");
@@ -74,10 +85,22 @@ $("file").addEventListener("change", async e => {
   catch(err){ console.error(err); status(err.message || String(err), "bad"); }
   e.target.value = "";
 });
+/* The sample workbooks: the .xlsx beside the page, or, where the host serves no
+   .xlsx (a page published on claude.ai), the same bytes as base64 text. */
+async function sampleBytes(name){
+  const res = await fetch(name);
+  if(res.ok && !/text\/html/.test(res.headers.get("content-type") || "")) return new Uint8Array(await res.arrayBuffer());
+  const alt = await fetch(name + ".b64.txt");
+  if(!alt.ok) throw new Error(`Could not load the sample ${name}.`);
+  const bin = atob((await alt.text()).trim()), u = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  return u;
+}
+
 for(const b of document.querySelectorAll("[data-sample]")){
   b.addEventListener("click", async () => {
     const url = b.dataset.sample;
-    try{ const res = await fetch(url); await openWorkbook(new Uint8Array(await res.arrayBuffer()), url.split("/").pop()); }
+    try{ await openWorkbook(await sampleBytes(url), url.split("/").pop()); }
     catch(err){ console.error(err); status(err.message || String(err), "bad"); }
   });
 }
@@ -85,6 +108,6 @@ for(const b of document.querySelectorAll("[data-sample]")){
 /* The example opens first; ?file=blank opens the blank template instead. */
 (async () => {
   const which = new URLSearchParams(location.search).get("file") === "blank" ? "blank-deal-list.xlsx" : "example-deal-list.xlsx";
-  try{ const res = await fetch(which); await openWorkbook(new Uint8Array(await res.arrayBuffer()), which); }
+  try{ await openWorkbook(await sampleBytes(which), which); }
   catch(err){ console.error(err); status(err.message || String(err), "bad"); }
 })();

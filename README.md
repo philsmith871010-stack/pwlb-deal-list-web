@@ -44,6 +44,7 @@ those out from the raw rows itself.
 src/
   config.js          which sheets are shown, and which are read but hidden
   main.js            the page: open, save, the sample workbooks
+scripts/artifact.mjs the build, made publishable on claude.ai
   xlsx/zip.js        reading and writing the zip package
   xlsx/read.js       the .xlsx as a plain model: cells, styles, rules, tables, names
   xlsx/write.js      saving: the original package with the typed-in sheets replaced
@@ -64,6 +65,12 @@ npm install
 npm run build
 npx vite preview --port 8302      # or serve dist/ any other way
 ```
+
+To publish it as a page on claude.ai, `node scripts/artifact.mjs <outdir>` turns
+`dist/` into the page and the files beside it (the sample workbooks go as
+base64 text, which the page falls back to, since claude.ai serves no `.xlsx`);
+saving there goes through the viewer's `downloads` capability, which asks the
+person to confirm.
 
 Tests, with the page served on 8302 (the round trip also needs the report
 tool's page, from the pwlbtoday-tms repository, served on 8201):
