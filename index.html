@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deal list</title>
+<style>
+  :root{--ink:#0a2540;--muted:#5b6b7b;--line:#d9dee4;--bg:#f6f8fa;--ok:#1a7f4b;--bad:#9b1c1c}
+  html,body{margin:0;height:100%;font:14px/1.4 Arial,Helvetica,sans-serif;color:var(--ink);background:#fff}
+  body{display:flex;flex-direction:column}
+  #topbar{display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--bg);flex:none;flex-wrap:wrap}
+  #topbar h1{font-size:15px;margin:0;font-weight:700}
+  #topbar #fname{color:var(--muted)}
+  #topbar button{font:inherit;padding:5px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);cursor:pointer}
+  #topbar button:hover{border-color:var(--ink)}
+  #status{margin-left:auto;color:var(--muted);font-size:13px}
+  #status[data-kind=ok]{color:var(--ok)} #status[data-kind=bad]{color:var(--bad)}
+  #sheet{flex:1;min-height:0;position:relative}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <h1>Deal list</h1><span id="fname"></span>
+  <button id="open" type="button">Open a workbook…</button>
+  <button type="button" data-sample="example-deal-list.xlsx">Example</button>
+  <button type="button" data-sample="blank-deal-list.xlsx">Blank</button>
+  <button id="save" type="button">Save as .xlsx</button>
+  <input id="file" type="file" accept=".xlsx" hidden>
+  <span id="status">Loading…</span>
+</div>
+<div id="sheet"></div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
